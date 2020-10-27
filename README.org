@@ -1,0 +1,61 @@
+#+title: vtermux
+
+* vtermux
+Terminal multiplexer for [[https://github.com/akermu/emacs-libvterm][emacs-libvterm]].
+
+This is similar to [[https://github.com/suonlight/multi-vterm][multi-vterm]] but implemented as a minor mode to allow further extension.
+
+** Table of Contents :TOC_4:
+- [[#vtermux][vtermux]]
+  - [[#requirements][Requirements]]
+  - [[#installation][Installation]]
+  - [[#usage][Usage]]
+    - [[#keybindings][Keybindings]]
+  - [[#mode-line---spaceline][Mode Line - Spaceline]]
+    - [[#requirements-1][Requirements]]
+    - [[#usage-1][Usage]]
+
+** Requirements
+    - [[https://github.com/akermu/emacs-libvterm][vterm]]
+
+** Installation
+With [[https://github.com/raxod502/straight.el][straight.el]]
+#+BEGIN_SRC emacs-lisp
+(use-package vtermux
+  :straight (vtermux :type git
+                     :host github
+                     :repo "mitch-kyle/vtermux")
+  :after vterm)
+#+END_SRC
+
+** Usage
+   - Run or raise vtermux buffer with the ~vtermux~ function.
+   - Enable or disable minor mode, ~vtermux-mode~, in any vterm buffer.
+   - Create a new vtermux buffer with ~vtermux-create~
+
+*** Keybindings
+Keybindings for vtermux-mode.
+| Keybinding  | Function                       | Description                                               |
+|-------------+--------------------------------+-----------------------------------------------------------|
+| ~C-a c~     | ~vtermux-create~               | Create a new vtermux buffer.                              |
+| ~C-a b~     | ~vtermux-switch~               | Interactively switch to vtermux buffer by terminal title. |
+| ~C-a r~     | ~vtermux-execute~              | Run a command in a new vtermux buffer.                    |
+| ~C-a n~     | ~vtermux-next~                 | Switch to the next vtermux buffer.                        |
+| ~C-a p~     | ~vtermux-prev~                 | Switch to the previous vtermux buffer                     |
+| ~C-a [0-9]~ | ~(vtermux-switch-index [0-9])~ | Switch to the vtermux buffer at the index of the key.     |
+| ~C-a ]~     | ~vterm-copy-mode~              | Enable copy mode                                          |
+| ~C-a C-a~   | ~vterm-send-C-a~               | Send ~C-a~ to terminal.                                   |
+
+** Mode Line - Spaceline
+A mode line that indicates the active vtermux buffer and adjacent buffers.
+
+*** Requirements
+    - [[https://github.com/TheBB/spaceline][spaceline]]
+
+*** Usage
+To enable the mode line add this to your configuration file.
+
+#+BEGIN_SRC emacs-lisp
+(require 'vtermux-spaceline)
+(vtermux-spaceline-enable)
+#+END_SRC
