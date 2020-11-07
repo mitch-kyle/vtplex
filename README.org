@@ -1,12 +1,12 @@
-#+title: vtermux
+#+title: vtplex
 
-* vtermux
+* vtplex
 Terminal multiplexer for [[https://github.com/akermu/emacs-libvterm][emacs-libvterm]].
 
 This is similar to [[https://github.com/suonlight/multi-vterm][multi-vterm]] but implemented as a minor mode to allow further extension.
 
 ** Table of Contents :TOC_4:
-- [[#vtermux][vtermux]]
+- [[#vtplex][vtplex]]
   - [[#requirements][Requirements]]
   - [[#installation][Installation]]
   - [[#usage][Usage]]
@@ -21,33 +21,35 @@ This is similar to [[https://github.com/suonlight/multi-vterm][multi-vterm]] but
 ** Installation
 With [[https://github.com/raxod502/straight.el][straight.el]]
 #+BEGIN_SRC emacs-lisp
-(use-package vtermux
-  :straight (vtermux :type git
-                     :host github
-                     :repo "mitch-kyle/vtermux")
+(use-package vtplex
+  :straight (vtplex :type git
+                    :host github
+                    :repo "mitch-kyle/vtplex"
+                    :branch "main")
   :after vterm)
 #+END_SRC
 
 ** Usage
-   - Run or raise vtermux buffer with the ~vtermux~ function.
-   - Enable or disable minor mode, ~vtermux-mode~, in any vterm buffer.
-   - Create a new vtermux buffer with ~vtermux-create~
+   - Run or raise or bury vtplex buffer(s) with the ~vtplex~ function.
+   - Enable or disable minor mode, ~vtplex-mode~, in any vterm buffer.
+   - Create a new vtplex buffer with ~vtplex-create~
 
 *** Keybindings
-Keybindings for vtermux-mode.
-| Keybinding  | Function                       | Description                                               |
-|-------------+--------------------------------+-----------------------------------------------------------|
-| ~C-a c~     | ~vtermux-create~               | Create a new vtermux buffer.                              |
-| ~C-a b~     | ~vtermux-switch~               | Interactively switch to vtermux buffer by terminal title. |
-| ~C-a r~     | ~vtermux-execute~              | Run a command in a new vtermux buffer.                    |
-| ~C-a n~     | ~vtermux-next~                 | Switch to the next vtermux buffer.                        |
-| ~C-a p~     | ~vtermux-prev~                 | Switch to the previous vtermux buffer                     |
-| ~C-a [0-9]~ | ~(vtermux-switch-index [0-9])~ | Switch to the vtermux buffer at the index of the key.     |
-| ~C-a ]~     | ~vterm-copy-mode~              | Enable copy mode                                          |
-| ~C-a C-a~   | ~vterm-send-C-a~               | Send ~C-a~ to terminal.                                   |
+Keybindings for vtplex-mode.
+
+| Keybinding  | Function                      | Description                                              |
+|-------------+-------------------------------+----------------------------------------------------------|
+| ~C-a c~     | ~vtplex-create~               | Create a new vtplex buffer.                              |
+| ~C-a b~     | ~vtplex-switch~               | Interactively switch to vtplex buffer by terminal title. |
+| ~C-a r~     | ~vtplex-execute~              | Run a command in a new vtplex buffer.                    |
+| ~C-a n~     | ~vtplex-next~                 | Switch to the next vtplex buffer.                        |
+| ~C-a p~     | ~vtplex-prev~                 | Switch to the previous vtplex buffer                     |
+| ~C-a [0-9]~ | ~(vtplex-switch-index [0-9])~ | Switch to the vtplex buffer at the index of the key.     |
+| ~C-a [~     | ~vterm-copy-mode~             | Enable copy mode                                         |
+| ~C-a C-a~   | ~vterm-send-C-a~              | Send ~C-a~ to terminal.                                  |
 
 ** Mode Line - Spaceline
-A mode line that indicates the active vtermux buffer and adjacent buffers.
+A mode line that indicates the active vtplex buffer and adjacent buffers.
 
 *** Requirements
     - [[https://github.com/TheBB/spaceline][spaceline]]
@@ -56,6 +58,6 @@ A mode line that indicates the active vtermux buffer and adjacent buffers.
 To enable the mode line add this to your configuration file.
 
 #+BEGIN_SRC emacs-lisp
-(require 'vtermux-spaceline)
-(vtermux-spaceline-enable)
+(require 'vtplex-spaceline)
+(vtplex-spaceline-enable)
 #+END_SRC

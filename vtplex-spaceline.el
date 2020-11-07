@@ -1,11 +1,11 @@
-;;; vtermux-spaceline.el --- spaceline segment for vtermux -*- lexical-binding: t -*-
+;;; vtplex-spaceline.el --- spaceline segment for vtplex -*- lexical-binding: t -*-
 
 ;; Author: Mitch Kyle <mitch.tux@gmail.com>
 ;; Maintainer: Mitch Kyle <mitch.tux@gmail.com>
 ;; Version: 0.1.0-alpha
-;; Package-Requires: ((spaceline "2.0.1") (vtermux))
-;; Homepage: https://github.com/mitch-kyle/vtermux
-;; Keywords: vtermux spaceline
+;; Package-Requires: ((spaceline "2.0.1") (vtplex))
+;; Homepage: https://github.com/mitch-kyle/vtplex
+;; Keywords: vtplex spaceline
 
 ;; This file is not part of GNU Emacs
 
@@ -24,46 +24,46 @@
 
 ;;; Commentary:
 
-;; tmux powerline like mode line for for vtermux.
+;; tmux powerline like mode line for for vtplex.
 
 ;;; Code:
-(require 'vtermux)
+(require 'vtplex)
 (require 'spaceline)
 
 ;;;;;;;;;;;;
 ;; Custom ;;
 ;;;;;;;;;;;;
 
-(defgroup vtermux-spaceline nil
-  "vtermux spaceline segment"
+(defgroup vtplex-spaceline nil
+  "vtplex spaceline segment"
   :group 'spaceline)
 
-(defcustom vtermux-spaceline-max-title-length 30
-  "The maximum number of characters allowed in the vtermux status line for a
+(defcustom vtplex-spaceline-max-title-length 30
+  "The maximum number of characters allowed in the vtplex status line for a
 buffer"
   :type 'integer
-  :group 'vtermux-spaceline)
+  :group 'vtplex-spaceline)
 
-(defcustom vtermux-spaceline-title-overflow-suffix "..."
-  "String to appended to title in the vtermux buffer indicator to show that it
+(defcustom vtplex-spaceline-title-overflow-suffix "..."
+  "String to appended to title in the vtplex buffer indicator to show that it
 has been truncated for being too long."
   :type 'integer
-  :group 'vtermux-spaceline)
+  :group 'vtplex-spaceline)
 
 
 ;;;;;;;;;;;;;;;
 ;; Variables ;;
 ;;;;;;;;;;;;;;;
 
-(defvar vtermux-spaceline-n-buffer-indicators 9
+(defvar vtplex-spaceline-n-buffer-indicators 9
   "Number of buffer indicators to have on the status line. this number should
 be positive and odd.")
 
-(defvar vtermux-spaceline-prune-title
+(defvar vtplex-spaceline-prune-title
   (format "%s@%s: "
           (getenv "USER")
           (s-trim (shell-command-to-string "hostname")))
-  "prefix to remove from terminal title in vtermux buffer indicator.")
+  "prefix to remove from terminal title in vtplex buffer indicator.")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -73,52 +73,50 @@ be positive and odd.")
 ;; This function is only called in one place but if it's kept as a named
 ;; function it can be hacked to display what the user likes for the buffer
 ;; indicator
-(defun vtermux-spaceline--indicator-text (index buffer)
-  "Get the text for the indicator for a specific index and vtermux buffer."
+(defun vtplex-spaceline--indicator-text (index buffer)
+  "Get the text for the indicator for a specific index and vtplex buffer."
   (when-let (name (with-current-buffer buffer
-                    (when vtermux-title
-                      (s-trim vtermux-title))))
-    (let ((name (string-remove-prefix vtermux-spaceline-prune-title name)))
+                    (when vtplex-title
+                      (s-trim vtplex-title))))
+    (let ((name (string-remove-prefix vtplex-spaceline-prune-title name)))
       (format "[%d] %s"
               index
               (if (<= (length name)
-                      vtermux-spaceline-max-title-length)
+                      vtplex-spaceline-max-title-length)
                   name
                 (concat
                  (substring name 0
-                            (- vtermux-spaceline-max-title-length
+                            (- vtplex-spaceline-max-title-length
                                (length
-                                vtermux-spaceline-title-overflow-suffix)))
-                 vtermux-spaceline-title-overflow-suffix))))))
+                                vtplex-spaceline-title-overflow-suffix)))
+                 vtplex-spaceline-title-overflow-suffix))))))
 
-(defun vtermux-spaceline-buffer-indicator (n
+(defun vtplex-spaceline-buffer-indicator (n
                                            base-priority
                                            priority-increment
                                            &rest props)
   "Generate a list of spaceline segments which will show the current
-vtermux buffer along with it's surrounding buffers with descending priority.
+vtplex buffer along with it's surrounding buffers with descending priority.
 
 when used with a window system, indicators are clickable and will switch to
 the buffer they represent."
   (let ((result)
         (mid-point (/ n 2)))
     (dotimes (i n)
-      (let ((sym (intern (format "vtermux-status-line%s" i)))
+      (let ((sym (intern (format "vtplex-status-line%s" i)))
             (priority (- base-priority
                          (* (abs (- mid-point i))
                             priority-increment)))
             (position (- (- mid-point i))))
         (eval
          `(spaceline-define-segment ,sym
-            "generated by `vtermux-spaceline'."
-            (let* ((cur-index (or (cl-position (current-buffer)
-                                               vtermux-buffer-list)
-                                  0))
+            "generated by `vtplex-spaceline'."
+            (let* ((cur-index (vtplex--current-index))
                    (my-index (+ cur-index ,position)))
               (when-let (buf (and (>= my-index 0)
-                                  (nth my-index vtermux-buffer-list)))
+                                  (nth my-index vtplex-buffer-list)))
                 (propertize
-                 (vtermux-spaceline--indicator-text my-index buf)
+                 (vtplex-spaceline--indicator-text my-index buf)
                  ;; Highlight active buffer
                  ,@(when (zerop position)
                      '('face 'mode-line-buffer-id))
@@ -136,7 +134,7 @@ the buffer they represent."
                            result))))
     (reverse result)))
 
-(spaceline-define-segment vtermux-projectile
+(spaceline-define-segment vtplex-projectile
   "Display project name with projectile menu"
   (when (and (boundp projectile-project-root)
              (projectile-project-root))
@@ -151,10 +149,10 @@ the buffer they represent."
 ;; Hook Functions ;;
 ;;;;;;;;;;;;;;;;;;;;
 
-(defun vtermux-spaceline--set (&rest _)
-  "Hook function to manage mode-line for vtermux buffers"
-  (if (and vtermux-mode (functionp 'spaceline-ml-vtermux))
-      (setq mode-line-format '("%e" (:eval (spaceline-ml-vtermux))))
+(defun vtplex-spaceline--set (&rest _)
+  "Hook function to manage mode-line for vtplex buffers"
+  (if (and vtplex-mode (functionp 'spaceline-ml-vtplex))
+      (setq mode-line-format '("%e" (:eval (spaceline-ml-vtplex))))
     (kill-local-variable 'mode-line-format)))
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -162,10 +160,10 @@ the buffer they represent."
 ;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;###autoload
-(defun vtermux-spaceline-compile (&rest additional-segments)
-  "Compile the vtermux spaceline."
+(defun vtplex-spaceline-compile (&rest additional-segments)
+  "Compile the vtplex spaceline."
   (spaceline-compile
-    'vtermux
+    'vtplex
     `(((((persp-name :fallback workspace-number) window-number)
         :separator "•")
        :face highlight-face
@@ -178,12 +176,11 @@ the buffer they represent."
       ("copy"
        :face highlight-face
        :when vterm-copy-mode)
-      ,@(vtermux-spaceline-buffer-indicator
-         vtermux-spaceline-n-buffer-indicators
+      ,@(vtplex-spaceline-buffer-indicator
+         vtplex-spaceline-n-buffer-indicators
          99 4))
     `((version-control :when active
                        :priority 78)
-      (vtermux-projectile)
       which-function
       (python-pyvenv :fallback python-pyenv)
       (purpose :priority 94)
@@ -201,24 +198,24 @@ the buffer they represent."
       (hud :priority 99))))
 
 ;;;###autoload
-(defun vtermux-spaceline-enable (&rest additional-segments)
-  "Enable vtermux spaceline for vtermux-mode and set it for all current vtermux
+(defun vtplex-spaceline-enable (&rest additional-segments)
+  "Enable vtplex spaceline for vtplex-mode and set it for all current vtplex
 buffers."
-  (apply 'vtermux-spaceline-compile additional-segments)
-  (add-hook 'vtermux-mode-hook #'vtermux-spaceline--set)
+  (apply 'vtplex-spaceline-compile additional-segments)
+  (add-hook 'vtplex-mode-hook #'vtplex-spaceline--set)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
-      (when vtermux-mode
-        (vtermux-spaceline--set)))))
+      (when vtplex-mode
+        (vtplex-spaceline--set)))))
 
-(defun vtermux-spaceline-disable ()
-  "Disable vtermux spaceline and unset it from all current vtermux buffers."
-  (remove-hook 'vtermux-mode-hook #'vtermux-spaceline--set)
+(defun vtplex-spaceline-disable ()
+  "Disable vtplex spaceline and unset it from all current vtplex buffers."
+  (remove-hook 'vtplex-mode-hook #'vtplex-spaceline--set)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
-      (when vtermux-mode
+      (when vtplex-mode
         (kill-local-variable 'mode-line-format)))))
 
-(provide 'vtermux-spaceline)
+(provide 'vtplex-spaceline)
 
-;;; vtermux-spaceline.el ends here
+;;; vtplex-spaceline.el ends here
