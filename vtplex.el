@@ -60,7 +60,6 @@
               (setq vtplex-title title))
             '((name . vtplex-set-title-var)))
 
-
 ;;;;;;;;;;;;;;;;;;;;
 ;; Hook Functions ;;
 ;;;;;;;;;;;;;;;;;;;;
@@ -69,7 +68,6 @@
   (setq vtplex-buffer-list
         (delete (current-buffer) vtplex-buffer-list)))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Navigation Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,18 +75,19 @@
 (defun vtplex-switch (&optional title)
   "switch to vtplex buffer by terminal title."
   (interactive)
-  (let ((terms (mapcar (lambda (buf)
-                         (with-current-buffer buf
-                           (cons vtplex-title buf)))
-                       (remove (current-buffer)
-                               vtplex-buffer-list)))
-        (choice (or title
-                    (completing-read "vtplex Buffer: "
-                                     (map-keys terms)
-                                     nil
-                                     t))))
-    (when-let (buf (assoc title terms))
-      (switch-to-buffer buff))))
+  (let* ((terms (mapcar (lambda (buf)
+                          (with-current-buffer buf
+                            (cons vtplex-title buf)))
+                        (remove (current-buffer)
+                                vtplex-buffer-list)))
+         (choice (or title
+                     (completing-read "vtplex Buffer: "
+                                      (map-keys terms)
+                                      nil
+                                      t))))
+    (when-let (buf (alist-get choice terms))
+      (switch-to-buffer buf))))
+
 
 (defun vtplex-switch-index (index)
   "switch to vtplex buffer by index"

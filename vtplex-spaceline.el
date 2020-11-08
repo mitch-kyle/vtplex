@@ -137,9 +137,7 @@ the buffer they represent."
 
 (spaceline-define-segment vtplex-copy-mode
   "Indicator for vterm-copy-mode"
-  (when vterm-copy-mode
-    (propertize "copy"
-                'face highlight-face)))
+  (when vterm-copy-mode "copy"))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Hook Functions ;;
@@ -172,7 +170,8 @@ the buffer they represent."
       ,@(vtplex-spaceline-buffer-indicator
          vtplex-spaceline-n-buffer-indicators
          100 4))
-    `((vtplex-copy-mode :priority 100)
+    `((vtplex-copy-mode :priority 100
+                        :face highlight-face)
       (version-control :when active
                        :priority 78)
       which-function
