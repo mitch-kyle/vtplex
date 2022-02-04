@@ -41,6 +41,7 @@
 ;;; Code:
 
 (require 'vterm)
+(require 'seq)
 
 (declare vtplex-mode)
 
@@ -85,9 +86,8 @@
                                       (map-keys terms)
                                       nil
                                       t))))
-    (when-let (buf (alist-get choice terms))
+    (when-let (buf (cdr (assoc choice terms)))
       (switch-to-buffer buf))))
-
 
 (defun vtplex-switch-index (index)
   "switch to vtplex buffer by index"
@@ -128,6 +128,20 @@ vtplex buffer the index is 0."
   (while vtplex-mode
     (bury-buffer)))
 
+(defun vtplex-hide ()
+  "Hide vtplex buffers until a non vtplex buffer is displayed"
+  (interactive)
+  (let ((switch-to-prev-buffer-skip (lambda (_ buf _)
+                                      (with-current-buffer buf
+                                        vtplex-mode))))
+    (switch-to-prev-buffer)))
+
+(defun vtplex-last ()
+  (interactive)
+  (when-let (buf (seq-find (lambda (b) (with-current-buffer b vtplex-mode))
+                           (buffer-list)))
+    (switch-to-buffer buf)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Entry Point Commands ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -151,9 +165,9 @@ vtplex buffer the index is 0."
   "If a vtplex buffer exists, switch to it, else start a new vtplex buffer"
   (interactive)
   (cond
-   (vtplex-mode        (vtplex-bury))
-   (vtplex-buffer-list (vtplex-switch-index 0))
-   (:else               (vtplex-create))))
+   (vtplex-mode        (vtplex-hide))
+   (vtplex-buffer-list (vtplex-last))
+   (:else              (vtplex-create))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Minor Mode Definition ;;

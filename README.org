@@ -30,7 +30,7 @@ With [[https://github.com/raxod502/straight.el][straight.el]]
 #+END_SRC
 
 ** Usage
-   - Run or raise or bury vtplex buffer(s) with the ~vtplex~ function.
+   - Run or raise or hide vtplex buffer(s) with the ~vtplex~ function.
    - Enable or disable minor mode, ~vtplex-mode~, in any vterm buffer.
    - Create a new vtplex buffer with ~vtplex-create~
 

@@ -79,7 +79,7 @@ be positive and odd.")
                     (when vtplex-title
                       (string-remove-prefix vtplex-spaceline-prune-title
                                             (s-trim vtplex-title)))))
-    (format "[%d] %s" index
+    (format "%d %s" index
             (if (<= (length name)
                     vtplex-spaceline-max-title-length)
                 name
